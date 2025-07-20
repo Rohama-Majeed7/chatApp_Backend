@@ -38,7 +38,8 @@ app.use("/api/messages", messageRoutes);
 //   });
 // }
 
-server.listen(PORT, () => {
-  console.log("server is running on PORT:" + PORT);
-  connectDB();
+connectDB().then(() => {
+  server.listen(PORT, () => {
+    console.log("Server running on PORT:", PORT);
+  });
 });

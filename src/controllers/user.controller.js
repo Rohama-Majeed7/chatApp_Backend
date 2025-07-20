@@ -28,7 +28,7 @@ export const signup = async (req, res) => {
 
     if (newUser) {
       // generate jwt token here
-      generateToken(newUser._id, res, "1h");
+    const token =  generateToken(newUser._id, res, "1h");
       // save user to database
       await newUser.save();
 
@@ -37,6 +37,7 @@ export const signup = async (req, res) => {
         fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
+        token, // send token in response
       });
     } else {
       res.status(400).json({ message: "Invalid user data" });
@@ -64,13 +65,14 @@ export const login = async (req, res) => {
       return res.status(400).json({ message: "Invalid credentials" });
     }
 
-    generateToken(user._id, res, "7d");
+   const token =  generateToken(user._id, res, "7d");
 
     res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
       profilePic: user.profilePic,
+      token, // send token in response
     });
   } catch (error) {
     console.log("Error in login controller", error.message);

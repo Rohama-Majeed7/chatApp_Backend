@@ -137,7 +137,7 @@ export const forgetPassword = async (req, res) => {
     const user2 = await user.save();
     console.log("user2 in after token reset forgetPassword controller", user2);
 
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetLink = `https://chat-app-frontend-omega-two.vercel.app/reset-password/${resetToken}`;
     const emailSent = email.toString().toLowerCase();
     await sendEmail(emailSent, resetLink);
     res.status(200).json({ message: "Reset link sent to your email" });

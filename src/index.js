@@ -13,14 +13,40 @@ dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin:
-      process.env.CORS_ORIGIN ||
-      "https://chat-app-frontend-omega-two.vercel.app",
-    credentials: true,
-  })
-);
+const allowedOrigins = [
+  "https://chat-app-frontend-omega-two.vercel.app",
+  process.env.CORS_ORIGIN,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow Postman/server-to-server requests
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+
+// CORS must be before everything
+app.use(cors(corsOptions));
+
+// Manually handle preflight before DB middleware
+app.use((req, res, next) => {
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+  next();
+});
 
 app.use(cookieParser());
 app.use(express.json({ limit: "10mb" }));
@@ -33,6 +59,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// DB middleware must come after CORS and OPTIONS handling
 app.use(async (req, res, next) => {
   try {
     await connectDB();

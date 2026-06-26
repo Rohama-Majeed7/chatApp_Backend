@@ -21,7 +21,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: process.env.CORS_ORIGIN || "https://chat-app-frontend-omega-two.vercel.app",
     credentials: true,
   })
 );
